@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+/* Always open on Home. If the URL carries a leftover #section hash
+   (e.g. from a previous share link or bookmark), strip it out before
+   the browser gets a chance to auto-scroll to that section. */
+if(location.hash){ history.replaceState(null, '', location.pathname + location.search); }
+</script>
+<title>عین — Everything I Never Said Enough</title>
+<meta name="description" content="For Ain, with everything.">
+<meta name="theme-color" content="#3a0d12">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wine:#3a0d12;
+  --wine-deep:#24070b;
+  --crimson:#9c2b3a;
+  --rose:#d98a92;
+  --gold:#c9a24b;
+  --gold-soft:#e6d3a3;
+  --parchment:#f3e9dc;
+  --ink:#2a1418;
+  --glass-bg: rgba(255,255,255,0.06);
+  --glass-border: rgba(230,211,163,0.22);
+  --shadow: 0 20px 60px rgba(0,0,0,0.45);
+  --radius: 22px;
+  --serif: 'Cormorant Garamond', 'EB Garamond', serif;
+  --serif-body: 'EB Garamond', serif;
+  --urdu: 'Noto Nastaliq Urdu', serif;
+  --ease: cubic-bezier(.22,.9,.35,1);
+}
+[data-theme="light"]{
+  --wine:#7a2230;
+  --wine-deep:#f3e9dc;
+  --ink:#3a1418;
+  --glass-bg: rgba(58,13,18,0.05);
+  --glass-border: rgba(122,34,48,0.18);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family: var(--serif-body);
+  background:
+    radial-gradient(ellipse at 20% -10%, rgba(201,162,75,0.18), transparent 40%),
+    radial-gradient(ellipse at 90% 10%, rgba(156,43,58,0.25), transparent 45%),
+    linear-gradient(180deg, var(--wine-deep), var(--wine) 30%, var(--wine-deep));
+  background-attachment: fixed;
+  color: var(--parchment);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition: background .6s ease, color .6s ease;
+}
+[data-theme="light"] body{
+  background:
+    radial-gradient(ellipse at 20% -10%, rgba(122,34,48,0.10), transparent 40%),
+    radial-gradient(ellipse at 90% 10%, rgba(201,162,75,0.18), transparent 45%),
+    linear-gradient(180deg, #fbf6ee, #f3e9dc 40%, #ecdfc9);
+  color: var(--ink);
+}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:600; letter-spacing:.01em; margin:0 0 .3em;}
+p{line-height:1.7; margin:0 0 1em;}
+a{color:inherit;}
+button{font-family:var(--serif-body); cursor:pointer;}
+::selection{background: var(--gold); color: var(--wine-deep);}
+::-webkit-scrollbar{width:10px;}
+::-webkit-scrollbar-thumb{background:rgba(201,162,75,0.4); border-radius:10px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important;}
+}
+:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+
+#particleCanvas{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.55;}
+
+.glass{
+  background: var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+#app{position:relative; z-index:1;}
+nav.topnav{
+  position:sticky; top:0; z-index:50; padding:14px 5vw;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  backdrop-filter: blur(14px);
+  background:rgba(20,4,7,0.35);
+  border-bottom:1px solid var(--glass-border);
+}
+[data-theme="light"] nav.topnav{background:rgba(255,255,255,0.5);}
+.brand{font-family:var(--urdu); font-size:1.4rem; display:flex; align-items:center; gap:8px;}
+.brand .seal{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 60%, #8a6a1f); box-shadow:0 2px 8px rgba(0,0,0,.4); flex-shrink:0;}
+.nav-links{display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; flex:1; justify-content:center;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nav-links a{white-space:nowrap; font-size:.85rem; padding:8px 12px; border-radius:20px; text-decoration:none; opacity:.75; transition:all .25s var(--ease); letter-spacing:.02em;}
+.nav-links a:hover, .nav-links a.active{opacity:1; background:rgba(201,162,75,0.18);}
+.nav-tools{display:flex; align-items:center; gap:10px;}
+.icon-btn{background:rgba(255,255,255,0.06); border:1px solid var(--glass-border); border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; font-size:1rem; position:relative;}
+.badge{position:absolute; top:-4px; right:-4px; background:var(--crimson); color:#fff; font-size:.62rem; border-radius:50%; min-width:16px; height:16px; display:flex; align-items:center; justify-content:center; padding:0 3px;}
+
+main{max-width:1080px; margin:0 auto; padding:0 5vw 100px;}
+section.page{padding-top:56px; scroll-margin-top:80px;}
+.section-head{text-align:center; max-width:640px; margin:0 auto 42px;}
+.section-head .eyebrow{font-family:var(--serif); letter-spacing:.25em; text-transform:uppercase; font-size:.7rem; color:var(--gold-soft); margin-bottom:8px;}
+.section-head h2{font-size:2.3rem;}
+.section-head p{opacity:.75; font-style:italic;}
+
+#toastWrap{position:fixed; bottom:20px; right:20px; z-index:200; display:flex; flex-direction:column; gap:10px; max-width:300px;}
+.toast{padding:14px 18px; border-radius:14px; font-size:.9rem; animation:toastIn .4s var(--ease);}
+@keyframes toastIn{from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);}}
+
+/* ============ HERO ============ */
+.hero{position:relative; min-height:88vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:60px 5vw 40px; gap:22px;}
+.hero .eyebrow{font-family:var(--serif); letter-spacing:.3em; text-transform:uppercase; font-size:.72rem; color:var(--gold-soft);}
+.hero .urdu-name{font-family:var(--urdu); font-size: clamp(3.6rem, 16vw, 7rem); line-height:1.3; color:var(--gold-soft); text-shadow:0 4px 30px rgba(201,162,75,.35);}
+.hero .urdu-sub{font-family:var(--urdu); font-size:1.5rem; opacity:.85;}
+.hero h1{font-size: clamp(2rem, 5.4vw, 3.2rem); line-height:1.15;}
+.hero h1 em{font-style:italic; color:var(--gold-soft);}
+.ornament{font-size:1.6rem; color:var(--gold); opacity:.7; letter-spacing:.4em;}
+.scroll-cue{position:absolute; bottom:18px; font-size:.75rem; opacity:.55; letter-spacing:.1em;}
+
+/* ============ LOVE LETTER BLOCK ============ */
+.love-letter{max-width:640px; margin:0 auto; padding:42px 34px; text-align:center;}
+.love-letter p{font-family:var(--serif); font-size:1.25rem; font-style:italic; line-height:1.9;}
+.love-letter .sign{margin-top:18px; font-family:var(--urdu); font-size:1.4rem; color:var(--gold-soft);}
+
+/* ============ CARDS / GRID ============ */
+.grid{display:grid; gap:20px;}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+.card{padding:22px; transition: transform .3s var(--ease);}
+.card:hover{transform:translateY(-4px);}
+.card h3{font-size:1.1rem; color:var(--gold-soft); margin-bottom:8px;}
+
+/* ============ POEMS BOOK ============ */
+.book-wrap{display:flex; flex-direction:column; align-items:center; gap:22px;}
+.book-controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;}
+.book{perspective:2200px; width:min(560px,90vw); height:420px; position:relative;}
+.leaf{position:absolute; inset:0; padding:38px 34px; overflow-y:auto; transform-style:preserve-3d; transform-origin:left center; transition: transform .8s var(--ease); backface-visibility:hidden;}
+.leaf h3{font-size:1.3rem; margin-bottom:14px;}
+.leaf .poem-body{white-space:pre-line; font-size:1.05rem; line-height:1.85; font-style:italic;}
+.leaf .poem-body.urdu{font-family:var(--urdu); direction:rtl; text-align:right; font-style:normal; font-size:1.35rem; line-height:2.1;}
+.leaf-num{position:absolute; bottom:14px; right:24px; font-size:.75rem; opacity:.5;}
+.fav-star{position:absolute; top:16px; right:20px; font-size:1.3rem; background:none; border:none; color:var(--gold); opacity:.4;}
+.fav-star.active{opacity:1;}
+
+/* ============ FORMS ============ */
+.field{width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.15); color:inherit; font-family:var(--serif-body); margin-bottom:12px;}
+[data-theme="light"] .field{background:rgba(255,255,255,0.5);}
+textarea.field{resize:vertical; min-height:80px;}
+.btn{padding:11px 22px; border-radius:30px; border:1px solid var(--gold); background:transparent; color:var(--gold-soft); font-size:.9rem; letter-spacing:.03em; transition:all .3s var(--ease);}
+.btn:hover{background:var(--gold); color:var(--wine-deep);}
+.btn.solid{background:linear-gradient(120deg,var(--gold),var(--gold-soft)); color:var(--wine-deep); border:none; font-weight:600;}
+.btn.small{padding:6px 14px; font-size:.78rem;}
+.btn-row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+
+/* ============ THOUGHTS WALL ============ */
+.thought-post{padding:16px 18px; margin-bottom:14px; position:relative;}
+.thought-post .who{font-family:var(--urdu); color:var(--gold-soft); font-size:1.05rem;}
+.thought-post .ts{font-size:.7rem; opacity:.5; float:right;}
+.thought-post .msg{margin:6px 0 8px;}
+.thought-post .reacts{display:flex; gap:8px; font-size:.85rem; align-items:center;}
+.reacts button{background:none; border:none; color:inherit; opacity:.7; font-size:.95rem;}
+.reacts button:hover{opacity:1;}
+.comments-panel{border-top:1px solid var(--glass-border); margin-top:10px; padding-top:10px;}
+.comment-item{font-size:.85rem; padding:6px 0; line-height:1.5;}
+.comment-item .c-who{font-family:var(--urdu); color:var(--gold-soft); margin-right:4px;}
+.comment-item .c-text{opacity:.9;}
+.comment-empty{font-size:.8rem; opacity:.5; font-style:italic; margin:4px 0 10px;}
+.comment-compose{display:flex; gap:8px; margin-top:8px;}
+.comment-compose .field{margin-bottom:0; padding:8px 12px; font-size:.85rem;}
+.who-picker{display:flex; gap:10px; margin-bottom:10px;}
+#lockScreen{
+  position:fixed; inset:0; z-index:9999;
+  background: linear-gradient(180deg, var(--wine-deep), var(--wine) 30%, var(--wine-deep));
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:18px; padding:24px; text-align:center;
+}
+#lockScreen .lock-seal{width:64px; height:64px; border-radius:50%; background:radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 60%, #8a6a1f); box-shadow:0 4px 18px rgba(0,0,0,.5);}
+#lockScreen h2{font-family:var(--serif); font-style:italic; color:var(--gold-soft); margin:0;}
+#lockScreen input{width:min(280px, 80vw); padding:14px 16px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,.06); color:var(--parchment); font-size:1rem; text-align:center;}
+#lockScreen .lock-error{color:var(--rose); font-size:.85rem; min-height:1.2em;}
+.who-chip{flex:1; padding:10px; border-radius:12px; border:1px solid var(--glass-border); background:rgba(255,255,255,.04); font-family:var(--urdu); font-size:1.1rem; text-align:center; transition:all .25s var(--ease);}
+.who-chip.active{background:var(--gold); color:var(--wine-deep); border-color:var(--gold);}
+.compose{padding:16px;}
+
+/* ============ REASONS ============ */
+.reason-stage{display:flex; flex-direction:column; align-items:center; gap:20px;}
+.reason-card{width:min(440px,90vw); min-height:180px; padding:36px 30px; text-align:center; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-size:1.3rem; position:relative;}
+.reason-count{font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; opacity:.6;}
+
+/* ============ NOTIFICATIONS ============ */
+.notif-item{padding:16px 18px; margin-bottom:12px; text-align:left;}
+.notif-item .ts{font-size:.7rem; opacity:.5;}
+
+/* ============ SETTINGS ============ */
+.settings-list{max-width:520px; margin:0 auto; display:flex; flex-direction:column; gap:16px;}
+.set-row{display:flex; align-items:center; justify-content:space-between; padding:16px 20px;}
+.swatches{display:flex; gap:10px;}
+.swatch{width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
+.swatch.active{border-color:var(--parchment);}
+.switch{position:relative; width:46px; height:26px;}
+.switch input{opacity:0; width:0; height:0;}
+.slider-toggle{position:absolute; inset:0; background:rgba(255,255,255,0.15); border-radius:20px; transition:.3s; cursor:pointer;}
+.slider-toggle::before{content:''; position:absolute; height:20px; width:20px; left:3px; top:3px; background:var(--gold-soft); border-radius:50%; transition:.3s;}
+.switch input:checked + .slider-toggle{background:var(--gold);}
+.switch input:checked + .slider-toggle::before{transform:translateX(20px);}
+
+footer{text-align:center; padding:40px 20px 60px; opacity:.5; font-size:.8rem; font-style:italic;}
+
+.modal-overlay{position:fixed; inset:0; background:rgba(10,2,4,0.7); z-index:150; display:none; align-items:center; justify-content:center; padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal-box{max-width:520px; width:100%; padding:34px; max-height:80vh; overflow-y:auto; position:relative;}
+.modal-close{position:absolute; top:14px; right:16px; background:none; border:none; color:inherit; font-size:1.3rem; opacity:.6;}
+
+@media(max-width:640px){
+  nav.topnav{padding:12px 4vw;}
+  .nav-links{justify-content:flex-start;}
+  section.page{padding-top:38px;}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<div id="lockScreen">
+  <div class="lock-seal"></div>
+  <h2>For your eyes only</h2>
+  <input type="password" id="lockInput" placeholder="Enter the word" autocomplete="off">
+  <button class="btn solid" id="lockSubmit">Unlock</button>
+  <div class="lock-error" id="lockError"></div>
+</div>
+
+<canvas id="particleCanvas"></canvas>
+
+<div id="app">
+  <nav class="topnav">
+    <div class="brand"><span class="seal"></span> عین</div>
+    <div class="nav-links" id="navLinks"></div>
+    <div class="nav-tools">
+      <button class="icon-btn" id="notifBtn" title="Notifications">🔔<span class="badge" id="notifBadge" style="display:none">0</span></button>
+      <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
+    </div>
+  </nav>
+
+  <main id="mainContent">
+
+    <!-- ============ HOME ============ -->
+    <section class="page" id="home">
+      <div class="hero">
+        <div class="eyebrow">for the one and only</div>
+        <div class="urdu-name">عین</div>
+        <div class="ornament">✦ ✦ ✦</div>
+        <h1>Everything I've ever felt for you, <em>kept in one place</em></h1>
+        <div class="urdu-sub">تمہارے لیے، ہمیشہ کے لیے — نین</div>
+        <div class="scroll-cue">scroll ↓</div>
+      </div>
+
+      <div class="love-letter glass">
+        <p id="loveLetterText"></p>
+        <div class="sign">— نین</div>
+      </div>
+    </section>
+
+    <!-- ============ POEMS ============ -->
+    <section class="page" id="poems">
+      <div class="section-head">
+        <div class="eyebrow">Poems</div>
+        <h2>Every poem I've ever written</h2>
+        <p>All of them. All for the way you make me feel.</p>
+      </div>
+      <div class="search-box" style="max-width:520px;margin:0 auto 30px;">
+        <input class="field" id="poemSearch" placeholder="Search poems..." style="margin:0;">
+      </div>
+      <div class="book-wrap">
+        <div class="book glass" id="bookEl"></div>
+        <div class="book-controls">
+          <button class="btn small" id="poemPrev">← Prev</button>
+          <button class="btn small" id="poemFav">☆ Favorite</button>
+          <button class="btn small" id="poemNext">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GOOD WISHES ============ -->
+    <section class="page" id="wishes">
+      <div class="section-head">
+        <div class="eyebrow">Good Wishes</div>
+        <h2>Everything I pray for you</h2>
+      </div>
+      <div class="grid cols-2" id="wishesGrid"></div>
+    </section>
+
+    <!-- ============ 100 REASONS ============ -->
+    <section class="page" id="reasons">
+      <div class="section-head">
+        <div class="eyebrow">Reasons</div>
+        <h2>Why you, Ain</h2>
+        <p>Reveal one at a time.</p>
+      </div>
+      <div class="reason-stage">
+        <div class="reason-count" id="reasonCount"></div>
+        <div class="reason-card glass" id="reasonCard"></div>
+        <div class="btn-row">
+          <button class="btn small" id="reasonPrev">← Prev</button>
+          <button class="btn solid small" id="reasonNext">Reveal next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ THOUGHTS WALL ============ -->
+    <section class="page" id="thoughts">
+      <div class="section-head">
+        <div class="eyebrow">Our Thoughts</div>
+        <h2>Say whatever's on your mind</h2>
+        <p>A space for both of us to leave a thought, anytime.</p>
+      </div>
+      <div id="thoughtsList"></div>
+      <div class="compose glass">
+        <div class="who-picker" id="whoPicker">
+          <button class="who-chip" data-who="عین">عین</button>
+          <button class="who-chip" data-who="نین">نین</button>
+        </div>
+        <textarea class="field" id="thoughtInput" placeholder="Write what's on your mind..." style="margin-bottom:10px;"></textarea>
+        <button class="btn solid" id="thoughtSend">Share it</button>
+      </div>
+    </section>
+
+    <!-- ============ SETTINGS ============ -->
+    <section class="page" id="settings">
+      <div class="section-head">
+        <div class="eyebrow">Settings</div>
+        <h2>Make it yours</h2>
+      </div>
+      <div class="settings-list">
+        <div class="set-row glass">
+          <span>Dark / Light mode</span>
+          <label class="switch"><input type="checkbox" id="themeToggle"><span class="slider-toggle"></span></label>
+        </div>
+        <div class="set-row glass">
+          <span>Accent color</span>
+          <div class="swatches" id="swatches"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>for عین, from نین — every word here is true</footer>
+  </main>
+</div>
+
+<div id="toastWrap"></div>
+
+<div class="modal-overlay" id="notifModal">
+  <div class="modal-box glass">
+    <button class="modal-close" data-close="notifModal">✕</button>
+    <div id="notifModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="whoAmIModal">
+  <div class="modal-box glass">
+    <h3 style="margin-bottom:6px;">Who's on this device?</h3>
+    <p style="opacity:.75; font-size:.9rem; margin-bottom:16px;">So notifications and your name get remembered here.</p>
+    <div class="who-picker">
+      <button class="who-chip" data-whoami="عین">عین</button>
+      <button class="who-chip" data-whoami="نین">نین</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal){
+  await OneSignal.init({
+    appId: "08c8cd1e-dce0-47cd-9719-5e7b39c02dda", // keep in sync with ONESIGNAL_APP_ID in app.js
+    serviceWorkerParam: { scope: "/" },
+    serviceWorkerPath: "sw.js"
+  });
+});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="app.js"></script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+<script>
+/* Simple password lock — keeps casual link-clickers out. Not real
+   security (anyone who reads the page source can see the check), but
+   enough to keep this private between the two of you. */
+(function(){
+  const PASS = 'Ain';
+  const screenEl = document.getElementById('lockScreen');
+  const input = document.getElementById('lockInput');
+  const btn = document.getElementById('lockSubmit');
+  const err = document.getElementById('lockError');
+  function tryUnlock(){
+    if(input.value === PASS){
+      localStorage.setItem('ain_site_unlocked', '1');
+      screenEl.style.display = 'none';
+    } else {
+      err.textContent = "That's not it — try again.";
+      input.value = '';
+    }
+  }
+  if(localStorage.getItem('ain_site_unlocked') === '1'){
+    screenEl.style.display = 'none';
+  }
+  btn.onclick = tryUnlock;
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') tryUnlock(); });
+})();
+</script>
+</body>
+</html>
