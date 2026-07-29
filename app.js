@@ -213,6 +213,7 @@ try{
   sharedDocRef = db.collection('ain_site').doc('shared');
 }catch(e){
   console.error('Firebase init failed — check firebaseConfig in app.js', e);
+  setTimeout(()=>{ try{ toast('Firebase init failed: ' + (e && e.message ? e.message : e)); }catch(_){} }, 500);
 }
 
 async function cGet(key){
@@ -221,12 +222,12 @@ async function cGet(key){
     const snap = await sharedDocRef.get();
     const data = snap.exists ? snap.data() : {};
     return data[key] ?? null;
-  }catch(e){ console.error('cloud get failed', key, e); return null; }
+  }catch(e){ toast('Load failed: ' + (e && e.message ? e.message : e)); return null; }
 }
 async function cSet(key, value){
   if(!sharedDocRef) return false;
   try{ await sharedDocRef.set({ [key]: value }, { merge: true }); return true; }
-  catch(e){ console.error('cloud set failed', key, e); return false; }
+  catch(e){ toast('Save failed: ' + (e && e.message ? e.message : e)); return false; }
 }
 /* -------------------------- push notifications (OneSignal) ---------------
    1. Create a free account at onesignal.com
