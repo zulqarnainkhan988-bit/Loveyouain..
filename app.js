@@ -237,7 +237,7 @@ async function cSet(key, value){
       OneSignal's script gets merged into it, see the importScripts
       line at the top of sw.js).
    4. Copy the App ID it gives you and paste it below. */
-const ONESIGNAL_APP_ID = "PASTE_YOUR_ONESIGNAL_APP_ID";
+const ONESIGNAL_APP_ID = "08c8cd1e-dce0-47cd-9719-5e7b39c02dda";
 
 let deviceWho = null;
 async function registerPush(who){
